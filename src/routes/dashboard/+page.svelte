@@ -2,6 +2,7 @@
 import { page } from "$app/stores";
 import { Octokit } from "@octokit/core";
 import type { Endpoints } from "@octokit/types";
+import CodeChart from "./CodeChart.svelte";
 
 type listUserReposParameters = Endpoints["GET /user"]["response"];
 type listUserReposResponse = Endpoints["GET /users/{username}/repos"]["response"];
@@ -12,7 +13,6 @@ const fetchLanguageData = async () => {
         auth: $page.data.session?.accessToken || null
     });
     const { data }: listUserReposParameters = await octokit.request("GET /user");
-    console.log(data);
 
     const result: listUserReposResponse = await octokit.request("GET /users/{username}/repos", {
         username: data.login
@@ -49,8 +49,8 @@ const fetchLanguageData = async () => {
     Dashboard page
 </h1>
 <p>
-    Data loaded
     {#await fetchLanguageData() then data}
-        {JSON.stringify(data)}
+        Data loaded
+        <CodeChart chartData={data} />
     {/await}
 </p>
