@@ -33,6 +33,7 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@auth/sveltekit": "^0.14.2"
+		"@auth/sveltekit": "^0.14.2",
+		"octokit": "^3.1.2"
 	}
 }
