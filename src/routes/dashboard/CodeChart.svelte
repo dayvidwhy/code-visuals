@@ -1,7 +1,7 @@
 <script lang="ts">
-import Chart from 'chart.js/auto';
-import type { ChartConfiguration } from 'chart.js/auto';
-import { onMount, onDestroy } from 'svelte';
+import Chart from "chart.js/auto";
+import type { ChartConfiguration } from "chart.js/auto";
+import { onMount, onDestroy } from "svelte";
 
 export let chartData: { totals: Record<string, number> };
 
@@ -20,7 +20,7 @@ onMount(() => {
                 data: datasets
             }]
         }
-    }
+    };
 
     chart = new Chart(canvas, chartConfig);
 });

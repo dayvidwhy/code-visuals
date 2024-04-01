@@ -9,8 +9,13 @@ type listUserReposResponse = Endpoints["GET /users/{username}/repos"]["response"
 
 const fetchLanguageData = async () => {
     const octokit = new Octokit({
+        /**
+         * We're appending the 'accessToken' property to the session back
+         * in ./src/auth.ts so we can access it here.
+        */
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        auth: $page.data.session?.accessToken || null
+        auth: $page.data.session?.accessToken
     });
     const { data }: listUserReposParameters = await octokit.request("GET /user");
 
@@ -26,7 +31,7 @@ const fetchLanguageData = async () => {
     )));
 
     // totals languages across the projects
-    const totals: any = {};
+    const totals: Record<string, number> = {};
     let byteTotal = 0;
     repositoryLanguages.forEach(({ data }) => {
         Object.keys(data).forEach((key) => {

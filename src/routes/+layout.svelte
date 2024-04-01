@@ -1,20 +1,20 @@
 <script lang="ts">
     import "../app.css";
-    import { page } from '$app/stores';
-    import { signIn, signOut } from "@auth/sveltekit/client"
+    import { page } from "$app/stores";
+    import { signIn, signOut } from "@auth/sveltekit/client";
 
     const links = [
         {
-            name: 'Home',
-            href: '/'
+            name: "Home",
+            href: "/"
         },
         {
-            name: 'Dashboard',
-            href: '/dashboard'
+            name: "Dashboard",
+            href: "/dashboard"
         },
         {
-            name: 'Profile',
-            href: '/profile'
+            name: "Profile",
+            href: "/profile"
         }
     ];
 
@@ -53,5 +53,4 @@
         </slot>
     </div>
 </div>
-
 

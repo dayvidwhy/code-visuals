@@ -1,6 +1,6 @@
 <script>
-    import { SignIn, SignOut } from "@auth/sveltekit/components"
-    import { page } from "$app/stores"
+    import { SignIn, SignOut } from "@auth/sveltekit/components";
+    import { page } from "$app/stores";
   </script>
 <div>
     {#if $page.data.session}
