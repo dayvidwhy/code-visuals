@@ -1,6 +1,7 @@
-<h1>
-    Code Visuals
-</h1>
-<h2>
-    Visualise git repositories and view a users statistics
-</h2>
+<script>
+
+</script>
+
+<h1>Home</h1>
+<div>
+</div>
