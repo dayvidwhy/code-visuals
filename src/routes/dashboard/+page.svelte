@@ -1,61 +1,66 @@
 <script lang="ts">
 import { page } from "$app/stores";
-import { Octokit } from "@octokit/core";
-import type { Endpoints } from "@octokit/types";
-import CodeChart from "./CodeChart.svelte";
-
-type listUserReposParameters = Endpoints["GET /user"]["response"];
-type listUserReposResponse = Endpoints["GET /users/{username}/repos"]["response"];
+import { fetchAllRepositoryData } from "$lib/repository";
+import CodeChart from "$lib/components/CodeChart.svelte";
 
 const fetchLanguageData = async () => {
-    const octokit = new Octokit({
-        /**
-         * We're appending the 'accessToken' property to the session back
-         * in ./src/auth.ts so we can access it here.
-        */
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        auth: $page.data.session?.accessToken
-    });
-    const { data }: listUserReposParameters = await octokit.request("GET /user");
-
-    const result: listUserReposResponse = await octokit.request("GET /users/{username}/repos", {
-        username: data.login
-    });
-    // languages returns how man bytes of each language file
-    const repositoryLanguages = await Promise.all(result.data.map((repo) => (
-        octokit.request("GET /repos/{owner}/{repo}/languages", {
-            owner: data.login,
-            repo: repo.name
-        })
-    )));
-
+    /**
+    * We're appending the 'accessToken' property to the session back
+    * in ./src/auth.ts so we can access it here.
+    */
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const repositoryLanguages = await fetchAllRepositoryData($page.data.session?.accessToken);
     // totals languages across the projects
     const totals: Record<string, number> = {};
     let byteTotal = 0;
-    repositoryLanguages.forEach(({ data }) => {
-        Object.keys(data).forEach((key) => {
+    repositoryLanguages.forEach(({ languages }) => {
+        Object.keys(languages.data).forEach((key) => {
             if (totals[key] === undefined) {
                 totals[key] = 0;
             }
-            totals[key] += data[key];
-            byteTotal += data[key];
+            totals[key] += languages.data[key];
+            byteTotal += languages.data[key];
         });
     });
 
     return {
         totals,
-        byteTotal
+        byteTotal,
+        repositoryLanguages
     };
 };
 </script>
 
-<h1>
-    Dashboard page
-</h1>
-<p>
+<div class="flex flex-col">
     {#await fetchLanguageData() then data}
-        Data loaded
-        <CodeChart chartData={data} />
+    <div class="flex flex-row">
+        <div class="w-full p-2">
+            <h2>
+                Overall Language Usage
+            </h2>
+            <div class="border-slate-400 border p-2">
+                {#await fetchLanguageData() then data}
+                    <CodeChart chartHeight={200} chartData={data.totals} />
+                {/await}
+            </div>
+        </div>
+    </div>
+    <div class="flex flex-row flex-wrap">
+        {#each data.repositoryLanguages as repo}
+            <div class="w-1/4 p-2">
+                <h2>
+                    {repo.name}
+                </h2>
+                <div class="border-slate-400 border p-2">
+                    <CodeChart chartHeight={150} chartData={repo.languages.data} />
+                </div>
+            </div>
+        {/each}
+    </div>
+    {:catch error}
+        <div>
+            {error.message}
+        </div>
     {/await}
-</p>
+</div>
