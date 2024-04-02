@@ -35,8 +35,8 @@ const signOutUser = async () => {
 <nav class="flex justify-between border-b border-slate-400">
     <ul class="flex">
         {#each links as link}
-            <li class={`${$page.url.pathname === link.href ? "border-b-2 border-slate-600" : ""}`}>
-                <a class="block py-2 px-2" href={link.href}>{link.name}</a>
+            <li class={`${$page.url.pathname === link.href ? "border-b-2 border-cyan-700" : ""}`}>
+                <a class="block py-2 px-2 text-slate-700" href={link.href}>{link.name}</a>
             </li>
         {/each}
     </ul>

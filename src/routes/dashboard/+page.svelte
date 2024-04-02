@@ -75,8 +75,8 @@ const fetchAllRepostoryLanguageData = async (token: string): Promise<{
     {:then { colorFetcher, token }} 
         <div class="flex flex-row">
             <div class="w-full p-2 h-72">
-                <div class="border-slate-400 border p-2 h-full">
-                    <h2>
+                <div class="border-slate-400 border p-2 h-full rounded">
+                    <h2 class="text-xl text-slate-700">
                         Overall Language Usage
                     </h2>
                     {#await fetchAllRepostoryLanguageData(token)}
@@ -95,8 +95,8 @@ const fetchAllRepostoryLanguageData = async (token: string): Promise<{
             {:then data}
                 {#each data.repositories as repo}
                     <div class="w-1/4 p-2 mb h-72">
-                        <div class="p-2 border-slate-400 border h-full">
-                            <h2>
+                        <div class="p-2 border-slate-400 border h-full rounded">
+                            <h2 class="text-xl text-slate-700">
                                 {repo}
                             </h2>
                             {#await fetchRepositoryData(token, repo)}
