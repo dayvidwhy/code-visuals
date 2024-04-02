@@ -40,31 +40,35 @@ const fetchLanguageData = async () => {
 
 <div class="flex flex-col">
     {#if $page.data.session}
-        {#await fetchLanguageData() then data}
-        <div class="flex flex-row">
-            <div class="w-full p-2">
-                <h2>
-                    Overall Language Usage
-                </h2>
-                <div class="border-slate-400 border p-2">
-                    {#await fetchLanguageData() then data}
-                        <CodeChart colorFetcher={data.colorFetcher} chartHeight={200} chartData={data.totals} />
-                    {/await}
-                </div>
+        {#await fetchLanguageData()}
+            <div>
+                Loading...
             </div>
-        </div>
-        <div class="flex flex-row flex-wrap">
-            {#each data.repositoryLanguages as repo}
-                <div class="w-1/4 p-2">
+        {:then data}
+            <div class="flex flex-row">
+                <div class="w-full p-2">
                     <h2>
-                        {repo.name}
+                        Overall Language Usage
                     </h2>
                     <div class="border-slate-400 border p-2">
-                        <CodeChart colorFetcher={data.colorFetcher} chartHeight={150} chartData={repo.languages.data} />
+                        {#await fetchLanguageData() then data}
+                            <CodeChart colorFetcher={data.colorFetcher} chartHeight={200} chartData={data.totals} />
+                        {/await}
                     </div>
                 </div>
-            {/each}
-        </div>
+            </div>
+            <div class="flex flex-row flex-wrap">
+                {#each data.repositoryLanguages as repo}
+                    <div class="w-1/4 p-2">
+                        <h2>
+                            {repo.name}
+                        </h2>
+                        <div class="border-slate-400 border p-2">
+                            <CodeChart colorFetcher={data.colorFetcher} chartHeight={150} chartData={repo.languages.data} />
+                        </div>
+                    </div>
+                {/each}
+            </div>
         {:catch error}
             <div>
                 {error.message}
