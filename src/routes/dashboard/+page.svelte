@@ -2,8 +2,13 @@
 import { page } from "$app/stores";
 import { fetchAllRepositoryData } from "$lib/repository";
 import CodeChart from "$lib/components/CodeChart.svelte";
+import { colors } from "$lib/colors";
+import type { ColorFetcher } from "$lib/colors";
 
 const fetchLanguageData = async () => {
+    // instantiate color library
+    let colorFetcher: ColorFetcher = await colors();
+
     /**
     * We're appending the 'accessToken' property to the session back
     * in ./src/auth.ts so we can access it here.
@@ -27,7 +32,8 @@ const fetchLanguageData = async () => {
     return {
         totals,
         byteTotal,
-        repositoryLanguages
+        repositoryLanguages,
+        colorFetcher
     };
 };
 </script>
@@ -42,7 +48,7 @@ const fetchLanguageData = async () => {
                 </h2>
                 <div class="border-slate-400 border p-2">
                     {#await fetchLanguageData() then data}
-                        <CodeChart chartHeight={200} chartData={data.totals} />
+                        <CodeChart colorFetcher={data.colorFetcher} chartHeight={200} chartData={data.totals} />
                     {/await}
                 </div>
             </div>
@@ -54,7 +60,7 @@ const fetchLanguageData = async () => {
                         {repo.name}
                     </h2>
                     <div class="border-slate-400 border p-2">
-                        <CodeChart chartHeight={150} chartData={repo.languages.data} />
+                        <CodeChart colorFetcher={data.colorFetcher} chartHeight={150} chartData={repo.languages.data} />
                     </div>
                 </div>
             {/each}

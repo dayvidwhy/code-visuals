@@ -4,7 +4,6 @@ import type { ChartConfiguration } from "chart.js/auto";
 import { onMount, onDestroy } from "svelte";
 
 // local libs
-import { colors } from "$lib/colors";
 import type { ColorFetcher } from "$lib/colors";
 
 // Props
@@ -13,20 +12,13 @@ export let chartData: Record<
     number
 >;
 export let chartHeight: number;
+export let colorFetcher: ColorFetcher;
 
 // hold onto chart instance
 let canvas: HTMLCanvasElement;
 let chart: Chart;
 
 onMount(async () => {
-    // instantiate color library
-    let colorFetcher: ColorFetcher;
-    try {
-        colorFetcher = await colors();
-    } catch (error) {
-        console.error(error);
-    }
-
     // create chart
     const languages = Object.keys(chartData);
     const datasets = languages.map((key) => chartData[key]);
