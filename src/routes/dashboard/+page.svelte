@@ -90,9 +90,7 @@ const fetchAllRepostoryLanguageData = async (token: string): Promise<{
             </div>
         </div>
         <div class="flex flex-row flex-wrap">
-            {#await fetchDataForEachRepo(token)}
-                <Loader />
-            {:then data}
+            {#await fetchDataForEachRepo(token) then data}
                 {#each data.repositories as repo}
                     <div class="w-1/4 p-2 mb h-72">
                         <div class="p-2 border-slate-400 border h-full rounded">
