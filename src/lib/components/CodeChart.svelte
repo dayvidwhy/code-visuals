@@ -11,7 +11,6 @@ export let chartData: Record<
     string,
     number
 >;
-export let chartHeight: number;
 export let colorFetcher: ColorFetcher;
 
 // hold onto chart instance
@@ -47,4 +46,4 @@ onDestroy(() => {
 });
 </script>
 
-<canvas bind:this={canvas} width="400" height={chartHeight} id="myChart"></canvas>
+<canvas bind:this={canvas} width="400" id="myChart"></canvas>

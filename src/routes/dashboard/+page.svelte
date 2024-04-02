@@ -1,22 +1,54 @@
 <script lang="ts">
 import { page } from "$app/stores";
-import { fetchAllRepositoryData } from "$lib/repository";
+import {
+    fetchAllRepositoryData,
+    fetchRepositoriesForUser,
+    fetchRepositoryData
+} from "$lib/repository";
 import CodeChart from "$lib/components/CodeChart.svelte";
 import { colors } from "$lib/colors";
 import type { ColorFetcher } from "$lib/colors";
+import Loader from "$lib/components/Loader.svelte";
 
-const fetchLanguageData = async () => {
+const init = async (): Promise<
+    {
+        colorFetcher: ColorFetcher;
+        token: string;
+    }
+> => {
+    return {
+        colorFetcher: await colors(),
+        /**
+        * We're appending the 'accessToken' property to the session back
+        * in ./src/auth.ts so we can access it here.
+        */
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        token: $page.data.session.accessToken
+    };
+};
+
+const fetchDataForEachRepo = async (token: string) => {
     // instantiate color library
     let colorFetcher: ColorFetcher = await colors();
+    const repositories = await fetchRepositoriesForUser(token);
 
-    /**
-    * We're appending the 'accessToken' property to the session back
-    * in ./src/auth.ts so we can access it here.
-    */
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const repositoryLanguages = await fetchAllRepositoryData($page.data.session?.accessToken);
-    // totals languages across the projects
+    return {
+        repositories,
+        colorFetcher
+    };
+};
+
+const fetchAllRepostoryLanguageData = async (token: string): Promise<{
+    totals: Record<string, number>;
+    byteTotal: number;
+    colorFetcher: ColorFetcher;
+}> => {
+    let colorFetcher: ColorFetcher = await colors();
+
+    const repositoryLanguages = await fetchAllRepositoryData(token);
+    // totals languages across all repositories
+    console.log(repositoryLanguages);
     const totals: Record<string, number> = {};
     let byteTotal = 0;
     repositoryLanguages.forEach(({ languages }) => {
@@ -28,11 +60,9 @@ const fetchLanguageData = async () => {
             byteTotal += languages.data[key];
         });
     });
-
     return {
         totals,
         byteTotal,
-        repositoryLanguages,
         colorFetcher
     };
 };
@@ -40,39 +70,51 @@ const fetchLanguageData = async () => {
 
 <div class="flex flex-col">
     {#if $page.data.session}
-        {#await fetchLanguageData()}
-            <div>
-                Loading...
-            </div>
-        {:then data}
-            <div class="flex flex-row">
-                <div class="w-full p-2">
+    {#await init()}
+        <Loader />
+    {:then { colorFetcher, token }} 
+        <div class="flex flex-row">
+            <div class="w-full p-2 h-72">
+                <div class="border-slate-400 border p-2 h-full">
                     <h2>
                         Overall Language Usage
                     </h2>
-                    <div class="border-slate-400 border p-2">
-                        {#await fetchLanguageData() then data}
-                            <CodeChart colorFetcher={data.colorFetcher} chartHeight={200} chartData={data.totals} />
-                        {/await}
+                    {#await fetchAllRepostoryLanguageData(token)}
+                        <Loader />
+                    {:then data}
+                    <div class="p-2">
+                        <CodeChart colorFetcher={colorFetcher} chartData={data.totals} />
                     </div>
+                    {/await}
                 </div>
             </div>
-            <div class="flex flex-row flex-wrap">
-                {#each data.repositoryLanguages as repo}
-                    <div class="w-1/4 p-2">
-                        <h2>
-                            {repo.name}
-                        </h2>
-                        <div class="border-slate-400 border p-2">
-                            <CodeChart colorFetcher={data.colorFetcher} chartHeight={150} chartData={repo.languages.data} />
+        </div>
+        <div class="flex flex-row flex-wrap">
+            {#await fetchDataForEachRepo(token)}
+                <Loader />
+            {:then data}
+                {#each data.repositories as repo}
+                    <div class="w-1/4 p-2 mb h-72">
+                        <div class="p-2 border-slate-400 border h-full">
+                            <h2>
+                                {repo}
+                            </h2>
+                            {#await fetchRepositoryData(token, repo)}
+                                <Loader />
+                            {:then repoData}
+                                <div class="p-2">
+                                    <CodeChart colorFetcher={colorFetcher} chartData={repoData.languages.data} />
+                                </div>
+                            {/await}
                         </div>
                     </div>
                 {/each}
-            </div>
-        {:catch error}
-            <div>
-                {error.message}
-            </div>
+            {:catch error}
+                <div>
+                    {error.message}
+                </div>
+            {/await}
+        </div>
         {/await}
     {:else}
         <div class="flex flex-col border border-slate-400">

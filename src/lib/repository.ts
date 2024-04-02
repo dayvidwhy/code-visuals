@@ -22,6 +22,51 @@ const getOctokitInstance = async (accessToken: string): Promise<Octokit> => {
 };
 
 /**
+ * Fetch the repositories for the logged in user.
+ * @param accessToken 
+ * @returns 
+ */
+export const fetchRepositoriesForUser = async (
+    accessToken: string
+): Promise<string[]> => {
+    const octokit = await getOctokitInstance(accessToken);
+    const { data }: listUserReposParameters = await octokit.request("GET /user");
+
+    const userRepositories: listUserReposResponse = await octokit.request("GET /users/{username}/repos", {
+        username: data.login
+    });
+
+    return userRepositories.data.map((repo) => repo.name);
+};
+
+/**
+ * Fetch the data for a single repository.
+ * @param accessToken 
+ * @param repoName 
+ * @returns 
+ */
+export const fetchRepositoryData = async (
+    accessToken: string,
+    repoName: string
+): Promise<{
+    name: string;
+    languages: listLanguagesResponse;
+}> => {
+    const octokit = await getOctokitInstance(accessToken);
+    const { data }: listUserReposParameters = await octokit.request("GET /user");
+
+    const languages = await octokit.request("GET /repos/{owner}/{repo}/languages", {
+        owner: data.login,
+        repo: repoName
+    });
+
+    return {
+        name: repoName,
+        languages
+    };
+};
+
+/**
  * Fetch each repository for the user.
  * @param accessToken github access token.
  * @returns 
@@ -32,22 +77,6 @@ export const fetchAllRepositoryData = async (
     name: string;
     languages: listLanguagesResponse
 }[]> => {
-    const octokit = await getOctokitInstance(accessToken);
-    const { data }: listUserReposParameters = await octokit.request("GET /user");
-
-    const userRepositories: listUserReposResponse = await octokit.request("GET /users/{username}/repos", {
-        username: data.login
-    });
-    // languages returns how man bytes of each language file
-    const allRepositoryData = await Promise.all(userRepositories.data.map((repo) => (
-        octokit.request("GET /repos/{owner}/{repo}/languages", {
-            owner: data.login,
-            repo: repo.name
-        })
-    )));
-
-    return userRepositories.data.map((userRepo, index) => ({
-        name: userRepo.name,
-        languages: allRepositoryData[index]
-    }));
+    const repositories = await fetchRepositoriesForUser(accessToken);
+    return Promise.all(repositories.map((repo) => fetchRepositoryData(accessToken, repo)));
 };
