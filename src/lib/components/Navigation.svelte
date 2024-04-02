@@ -32,7 +32,7 @@ const signOutUser = async () => {
 };
 </script>
 
-<nav class="flex justify-between">
+<nav class="flex justify-between border-b border-slate-400">
     <ul class="flex">
         {#each links as link}
             <li class={`${$page.url.pathname === link.href ? "border-b-2 border-slate-600" : ""}`}>

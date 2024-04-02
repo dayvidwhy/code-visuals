@@ -10,9 +10,9 @@ let octokit: Octokit;
 /**
  * Get an instance of Octokit to use, or create one if it doesn't exist.
  * @param accessToken github access token.
- * @returns 
+ * @returns {Promise<Octokit>}
  */
-const getOctokitInstance = async (accessToken: string) => {
+const getOctokitInstance = async (accessToken: string): Promise<Octokit> => {
     if (!octokit) {
         octokit = new Octokit({
             auth: accessToken
