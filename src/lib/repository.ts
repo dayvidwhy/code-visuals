@@ -6,6 +6,7 @@ type listUserReposResponse = Endpoints["GET /users/{username}/repos"]["response"
 type listLanguagesResponse = Endpoints["GET /repos/{owner}/{repo}/languages"]["response"];
 
 let octokit: Octokit;
+let signedInUser: string;
 
 /**
  * Get an instance of Octokit to use, or create one if it doesn't exist.
@@ -22,6 +23,16 @@ const getOctokitInstance = async (accessToken: string): Promise<Octokit> => {
 };
 
 /**
+ * Preload the logged in user to prevent needing to check this again later.
+ * @param accessToken github access token.
+ */
+export const fetchUserDetails = async (accessToken: string): Promise<void> => {
+    const octokit = await getOctokitInstance(accessToken);
+    const { data }: listUserReposParameters = await octokit.request("GET /user");
+    signedInUser = data.login;
+};
+
+/**
  * Fetch the repositories for the logged in user.
  * @param accessToken 
  * @returns 
@@ -30,10 +41,9 @@ export const fetchRepositoriesForUser = async (
     accessToken: string
 ): Promise<string[]> => {
     const octokit = await getOctokitInstance(accessToken);
-    const { data }: listUserReposParameters = await octokit.request("GET /user");
-
+    console.log(signedInUser);
     const userRepositories: listUserReposResponse = await octokit.request("GET /users/{username}/repos", {
-        username: data.login
+        username: signedInUser
     });
 
     return userRepositories.data.map((repo) => repo.name);
@@ -53,10 +63,9 @@ export const fetchRepositoryData = async (
     languages: listLanguagesResponse;
 }> => {
     const octokit = await getOctokitInstance(accessToken);
-    const { data }: listUserReposParameters = await octokit.request("GET /user");
 
     const languages = await octokit.request("GET /repos/{owner}/{repo}/languages", {
-        owner: data.login,
+        owner: signedInUser,
         repo: repoName
     });
 

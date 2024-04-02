@@ -3,12 +3,14 @@ import { page } from "$app/stores";
 import {
     fetchAllRepositoryData,
     fetchRepositoriesForUser,
-    fetchRepositoryData
+    fetchRepositoryData,
+    fetchUserDetails
 } from "$lib/repository";
 import CodeChart from "$lib/components/CodeChart.svelte";
 import { colors } from "$lib/colors";
 import type { ColorFetcher } from "$lib/colors";
 import Loader from "$lib/components/Loader.svelte";
+import workerUrl from "$lib/worker?worker";
 
 const init = async (): Promise<
     {
@@ -16,54 +18,51 @@ const init = async (): Promise<
         token: string;
     }
 > => {
+    /**
+    * We're appending the 'accessToken' property to the session back
+    * in ./src/auth.ts so we can access it here.
+    */
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const token = $page.data.session.accessToken;
+    await fetchUserDetails(token);
     return {
         colorFetcher: await colors(),
-        /**
-        * We're appending the 'accessToken' property to the session back
-        * in ./src/auth.ts so we can access it here.
-        */
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        token: $page.data.session.accessToken
+        
+        token: token
     };
 };
 
 const fetchDataForEachRepo = async (token: string) => {
-    // instantiate color library
-    let colorFetcher: ColorFetcher = await colors();
     const repositories = await fetchRepositoriesForUser(token);
 
     return {
-        repositories,
-        colorFetcher
+        repositories
     };
 };
 
 const fetchAllRepostoryLanguageData = async (token: string): Promise<{
     totals: Record<string, number>;
     byteTotal: number;
-    colorFetcher: ColorFetcher;
 }> => {
-    let colorFetcher: ColorFetcher = await colors();
-
+    // grab all the languages for each repository
     const repositoryLanguages = await fetchAllRepositoryData(token);
-    // totals languages across all repositories
-    console.log(repositoryLanguages);
-    const totals: Record<string, number> = {};
-    let byteTotal = 0;
-    repositoryLanguages.forEach(({ languages }) => {
-        Object.keys(languages.data).forEach((key) => {
-            if (totals[key] === undefined) {
-                totals[key] = 0;
-            }
-            totals[key] += languages.data[key];
-            byteTotal += languages.data[key];
-        });
+
+    // create worker to calculate totals
+    const worker = new workerUrl;
+    worker.postMessage(repositoryLanguages);
+    const { totals, byteTotal } = await new Promise<{
+        totals: Record<string, number>;
+        byteTotal: number;
+    }>((resolve): void => {
+        worker.onmessage = (event) => {
+            resolve(event.data);
+        };
     });
+
     return {
         totals,
-        byteTotal,
-        colorFetcher
+        byteTotal
     };
 };
 </script>
