@@ -5,9 +5,6 @@ import { sequence } from "@sveltejs/kit/hooks";
 // CHeck if the user is authorized to view the page
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function authorizationHandle({ event, resolve }: { event: any, resolve: any }) {
-    // Protect any routes under /authenticated
-    console.log("In redirect");
-    console.log(event.url.pathname);
     if (
         event.url.pathname.startsWith("/dashboard") ||
         event.url.pathname.startsWith("/profile")
