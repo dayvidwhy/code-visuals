@@ -12,6 +12,10 @@ import type { ColorFetcher } from "$lib/colors";
 import Loader from "$lib/components/Loader.svelte";
 import workerUrl from "$lib/worker?worker";
 
+/**
+ * Instantiate the dashboard page pre-loading the color fetcher.
+ * Grab the user token here to pass to the component tree.
+ */
 const init = async (): Promise<
     {
         colorFetcher: ColorFetcher;
@@ -28,7 +32,6 @@ const init = async (): Promise<
     await fetchUserDetails(token);
     return {
         colorFetcher: await colors(),
-        
         token: token
     };
 };
