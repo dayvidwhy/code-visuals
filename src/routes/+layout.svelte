@@ -2,9 +2,9 @@
     import "../app.css";
     import Navigation from "$lib/components/Navigation.svelte";
 </script>
-<div>
+<div class="h-full flex flex-col">
     <Navigation />
-    <div class="container m-auto pt-4">
+    <div class="flex flex-1 overflow-hidden">
         <slot>
         </slot>
     </div>

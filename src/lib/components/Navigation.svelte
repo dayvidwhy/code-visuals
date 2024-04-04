@@ -32,22 +32,22 @@ const signOutUser = async () => {
 };
 </script>
 
-<nav class="flex justify-between border-b border-slate-400">
+<nav class="flex justify-between border-b border-slate-700 bg-slate-500">
     <ul class="flex">
         {#each links as link}
-            <li class={`${$page.url.pathname === link.href ? "border-b-2 border-cyan-700" : "border-b-2"}`}>
-                <a class="block py-2 px-2 text-slate-700 hover:bg-slate-100" href={link.href}>{link.name}</a>
+            <li class={`${$page.url.pathname === link.href ? "border-b-2 border-cyan-400" : "border-b-2 border-slate-500"}`}>
+                <a class="block py-3 px-2 text-slate-50 hover:bg-slate-400" href={link.href}>{link.name}</a>
             </li>
         {/each}
     </ul>
     <ul class="flex">
         {#if $page.data.session}
             <li>
-                <button class="block py-2 px-2 hover:bg-slate-100" on:click={signOutUser}>Logout</button>
+                <button class="block py-3 px-2 hover:bg-slate-400 text-slate-50" on:click={signOutUser}>Logout</button>
             </li>
         {:else}
             <li>
-                <button class="block py-2 px-2 hover:bg-slate-100" on:click={signInUser}>Login</button>
+                <button class="block py-3 px-2 hover:bg-slate-400 text-slate-50" on:click={signInUser}>Login</button>
             </li>
         {/if}
     </ul>

@@ -1,7 +1,8 @@
 <script>
     import { page } from "$app/stores";
 </script>
-<div>
+
+<div class="flex flex-col overflow-scroll w-full p-4">
     {#if $page.data.session}
         <div class="flex flex-col border border-slate-400">
             {#if $page.data.session.user?.image}
