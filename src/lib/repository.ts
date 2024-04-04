@@ -13,7 +13,7 @@ let signedInUser: string;
  * @param accessToken github access token.
  * @returns {Promise<Octokit>}
  */
-const getOctokitInstance = async (accessToken: string): Promise<Octokit> => {
+const getOctokitInstance = (accessToken: string): Octokit => {
     if (!octokit) {
         octokit = new Octokit({
             auth: accessToken
@@ -27,7 +27,7 @@ const getOctokitInstance = async (accessToken: string): Promise<Octokit> => {
  * @param accessToken github access token.
  */
 export const fetchUserDetails = async (accessToken: string): Promise<void> => {
-    const octokit = await getOctokitInstance(accessToken);
+    const octokit = getOctokitInstance(accessToken);
     const { data }: listUserReposParameters = await octokit.request("GET /user");
     signedInUser = data.login;
 };
@@ -40,7 +40,7 @@ export const fetchUserDetails = async (accessToken: string): Promise<void> => {
 export const fetchRepositoriesForUser = async (
     accessToken: string
 ): Promise<string[]> => {
-    const octokit = await getOctokitInstance(accessToken);
+    const octokit = getOctokitInstance(accessToken);
     const userRepositories: listUserReposResponse = await octokit.request("GET /users/{username}/repos", {
         username: signedInUser
     });
@@ -61,7 +61,7 @@ export const fetchRepositoryData = async (
     name: string;
     languages: listLanguagesResponse;
 }> => {
-    const octokit = await getOctokitInstance(accessToken);
+    const octokit = getOctokitInstance(accessToken);
 
     const languages: listLanguagesResponse = await octokit.request("GET /repos/{owner}/{repo}/languages", {
         owner: signedInUser,
