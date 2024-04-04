@@ -11,7 +11,7 @@ let signedInUser: string;
 /**
  * Get an instance of Octokit to use, or create one if it doesn't exist.
  * @param accessToken github access token.
- * @returns {Promise<Octokit>}
+ * @returns {Octokit}
  */
 const getOctokitInstance = (accessToken: string): Octokit => {
     if (!octokit) {
