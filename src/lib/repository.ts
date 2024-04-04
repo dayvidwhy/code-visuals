@@ -41,7 +41,6 @@ export const fetchRepositoriesForUser = async (
     accessToken: string
 ): Promise<string[]> => {
     const octokit = await getOctokitInstance(accessToken);
-    console.log(signedInUser);
     const userRepositories: listUserReposResponse = await octokit.request("GET /users/{username}/repos", {
         username: signedInUser
     });
