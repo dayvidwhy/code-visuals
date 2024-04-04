@@ -1,8 +1,6 @@
-
 import type { Endpoints } from "@octokit/types";
 type listLanguagesResponse = Endpoints["GET /repos/{owner}/{repo}/languages"]["response"];
 
-// worker.ts
 self.addEventListener("message", (e) => {
     const repositoryLanguages: {
         name: string;

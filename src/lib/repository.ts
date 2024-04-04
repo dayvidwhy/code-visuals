@@ -63,7 +63,7 @@ export const fetchRepositoryData = async (
 }> => {
     const octokit = await getOctokitInstance(accessToken);
 
-    const languages = await octokit.request("GET /repos/{owner}/{repo}/languages", {
+    const languages: listLanguagesResponse = await octokit.request("GET /repos/{owner}/{repo}/languages", {
         owner: signedInUser,
         repo: repoName
     });

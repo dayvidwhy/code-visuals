@@ -1,12 +1,22 @@
 <script lang="ts">
 import Chart from "chart.js/auto";
 import type { ChartConfiguration } from "chart.js/auto";
-import { onMount, onDestroy } from "svelte";
+import { onMount } from "svelte";
 
 // local libs
 import type { ColorFetcher } from "$lib/colors";
 
-// Props
+/**
+ * Data comes in the format
+ * {
+ *    "language": byteCount
+ * }
+ * eg
+ * {
+ *   "JavaScript": 1000,
+ *   "TypeScript": 2000
+ * }
+ */
 export let chartData: Record<
     string,
     number
@@ -15,10 +25,8 @@ export let colorFetcher: ColorFetcher;
 
 // hold onto chart instance
 let canvas: HTMLCanvasElement;
-let chart: Chart;
 
-onMount(async () => {
-    // create chart
+onMount(() => {
     const languages = Object.keys(chartData);
     const datasets = languages.map((key) => chartData[key]);
     const chartConfig: ChartConfiguration = {
@@ -38,12 +46,12 @@ onMount(async () => {
             maintainAspectRatio: false
         }
     };
-    chart = new Chart(canvas, chartConfig);
+    const chart: Chart = new Chart(canvas, chartConfig);
+
+    // cleanup on destroy
+    return () => chart?.destroy();
 });
 
-onDestroy(() => {
-    chart?.destroy();
-});
 </script>
 
 <canvas bind:this={canvas} width="400" id="myChart"></canvas>
