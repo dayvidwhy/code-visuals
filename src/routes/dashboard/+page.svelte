@@ -64,7 +64,7 @@ const sidebarNav = [
 ];
 </script>
 
-<nav class="w-44 bg-slate-500 text-white overflow-scroll">
+<nav class="w-44 bg-slate-500 text-white overflow-y-auto">
     <ul>
         {#each sidebarNav as nav}
             <li>
@@ -73,7 +73,7 @@ const sidebarNav = [
         {/each}
     </ul>
 </nav>
-<div class="w-full flex-1 overflow-scroll">
+<div class="w-full flex-1 overflow-y-auto">
     <div class="flex flex-col p-4">
         {#if $page.data.session}
         {#await init()}
