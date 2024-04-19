@@ -1,11 +1,8 @@
-import type { Endpoints } from "@octokit/types";
-type listLanguagesResponse = Endpoints["GET /repos/{owner}/{repo}/languages"]["response"];
+import type { RepositoryData } from "$lib";
 
 self.addEventListener("message", (e) => {
-    const repositoryLanguages: {
-        name: string;
-        languages: listLanguagesResponse
-    }[] = e.data;
+    const repositoryLanguages: RepositoryData[] = e.data;
+
     // totals languages across all repositories
     const totals: Record<string, number> = {};
     let byteTotal = 0;
@@ -18,8 +15,7 @@ self.addEventListener("message", (e) => {
             byteTotal += languages.data[key];
         });
     });
-    // Perform computation or task with data
-    // For example, let's just return the data
+
     self.postMessage({
         totals,
         byteTotal

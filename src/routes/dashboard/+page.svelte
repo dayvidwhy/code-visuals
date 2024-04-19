@@ -4,11 +4,12 @@ import {
     fetchAllRepositoryData,
     fetchRepositoriesForUser,
     fetchRepositoryData,
-    fetchUserDetails
-} from "$lib/repository";
+    fetchUserDetails,
+    colors
+} from "$lib";
+import type { ColorFetcher } from "$lib";
+
 import CodeChart from "$lib/components/CodeChart.svelte";
-import { colors } from "$lib/colors";
-import type { ColorFetcher } from "$lib/colors";
 import Loader from "$lib/components/Loader.svelte";
 import workerUrl from "$lib/worker?worker";
 
@@ -76,49 +77,49 @@ const sidebarNav = [
 <div class="w-full flex-1 overflow-y-auto">
     <div class="flex flex-col p-4">
         {#if $page.data.session}
-        {#await init()}
-            <Loader />
-        {:then { colorFetcher, token }} 
-            <div class="flex flex-row">
-                <div class="w-full p-2 h-72">
-                    <div class="border-slate-400 border p-2 h-full rounded bg-white">
-                        <h2 class="text-xl text-slate-700 font-bold">
-                            Overall Language Usage
-                        </h2>
-                        {#await fetchAllRepostoryLanguageData(token)}
-                            <Loader />
-                        {:then data}
-                        <div class="p-2">
-                            <CodeChart colorFetcher={colorFetcher} chartData={data.totals} />
+            {#await init()}
+                <Loader />
+            {:then { colorFetcher, token }} 
+                <div class="flex flex-row">
+                    <div class="w-full p-2 h-72">
+                        <div class="border-slate-400 border p-2 h-full rounded bg-white">
+                            <h2 class="text-xl text-slate-700 font-bold">
+                                Overall Language Usage
+                            </h2>
+                            {#await fetchAllRepostoryLanguageData(token)}
+                                <Loader />
+                            {:then data}
+                                <div class="p-2">
+                                    <CodeChart colorFetcher={colorFetcher} chartData={data.totals} />
+                                </div>
+                            {/await}
                         </div>
-                        {/await}
                     </div>
                 </div>
-            </div>
-            <div class="flex flex-row flex-wrap">
-                {#await fetchRepositoriesForUser(token) then repositories}
-                    {#each repositories as repo}
-                        <div class="w-1/4 p-2 mb h-72">
-                            <div class="p-2 border-slate-400 border h-full rounded bg-white">
-                                <h2 class="text-xl text-slate-700 font-bold">
-                                    {repo}
-                                </h2>
-                                {#await fetchRepositoryData(token, repo)}
-                                    <Loader />
-                                {:then repoData}
-                                    <div class="p-2">
-                                        <CodeChart colorFetcher={colorFetcher} chartData={repoData.languages.data} />
-                                    </div>
-                                {/await}
+                <div class="flex flex-row flex-wrap">
+                    {#await fetchRepositoriesForUser(token) then repositories}
+                        {#each repositories as repo}
+                            <div class="w-1/4 p-2 mb h-72">
+                                <div class="p-2 border-slate-400 border h-full rounded bg-white">
+                                    <h2 class="text-xl text-slate-700 font-bold">
+                                        {repo}
+                                    </h2>
+                                    {#await fetchRepositoryData(token, repo)}
+                                        <Loader />
+                                    {:then repoData}
+                                        <div class="p-2">
+                                            <CodeChart colorFetcher={colorFetcher} chartData={repoData.languages.data} />
+                                        </div>
+                                    {/await}
+                                </div>
                             </div>
+                        {/each}
+                    {:catch error}
+                        <div>
+                            {error.message}
                         </div>
-                    {/each}
-                {:catch error}
-                    <div>
-                        {error.message}
-                    </div>
-                {/await}
-            </div>
+                    {/await}
+                </div>
             {/await}
         {:else}
             <div class="flex flex-col border border-slate-400">

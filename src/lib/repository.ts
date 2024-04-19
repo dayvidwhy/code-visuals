@@ -8,6 +8,11 @@ type listLanguagesResponse = Endpoints["GET /repos/{owner}/{repo}/languages"]["r
 let octokit: Octokit;
 let signedInUser: string;
 
+export interface RepositoryData {
+    name: string;
+    languages: listLanguagesResponse;
+}
+
 /**
  * Get an instance of Octokit to use, or create one if it doesn't exist.
  * @param accessToken github access token.
@@ -35,7 +40,7 @@ export const fetchUserDetails = async (accessToken: string): Promise<void> => {
 /**
  * Fetch the repositories for the logged in user.
  * @param accessToken 
- * @returns 
+ * @returns {Promise<string[]>}
  */
 export const fetchRepositoriesForUser = async (
     accessToken: string
@@ -52,15 +57,12 @@ export const fetchRepositoriesForUser = async (
  * Fetch the data for a single repository.
  * @param accessToken 
  * @param repoName 
- * @returns 
+ * @returns {Promise<{ name: string; languages: listLanguagesResponse }>}
  */
 export const fetchRepositoryData = async (
     accessToken: string,
     repoName: string
-): Promise<{
-    name: string;
-    languages: listLanguagesResponse;
-}> => {
+): Promise<RepositoryData> => {
     const octokit = getOctokitInstance(accessToken);
 
     const languages: listLanguagesResponse = await octokit.request("GET /repos/{owner}/{repo}/languages", {
@@ -77,14 +79,11 @@ export const fetchRepositoryData = async (
 /**
  * Fetch each repository for the user.
  * @param accessToken github access token.
- * @returns 
+ * @returns {Promise<{ name: string; languages: listLanguagesResponse }>[]}>
  */
 export const fetchAllRepositoryData = async (
     accessToken: string
-): Promise<{
-    name: string;
-    languages: listLanguagesResponse
-}[]> => {
+): Promise<RepositoryData[]> => {
     const repositories = await fetchRepositoriesForUser(accessToken);
     return Promise.all(repositories.map((repo) => fetchRepositoryData(accessToken, repo)));
 };

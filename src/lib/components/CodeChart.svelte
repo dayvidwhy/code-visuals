@@ -2,9 +2,7 @@
 import Chart from "chart.js/auto";
 import type { ChartConfiguration } from "chart.js/auto";
 import { onMount } from "svelte";
-
-// local libs
-import type { ColorFetcher } from "$lib/colors";
+import type { ColorFetcher } from "$lib";
 
 /**
  * Data comes in the format
