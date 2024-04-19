@@ -65,11 +65,11 @@ const sidebarNav = [
 ];
 </script>
 
-<nav class="w-44 bg-slate-500 text-white overflow-y-auto">
+<nav class="w-44 bg-slate-700 text-white overflow-y-auto">
     <ul>
         {#each sidebarNav as nav}
             <li>
-                <a class={`block p-2 hover:bg-slate-400 hover:text-slate-200 ${$page.url.pathname === nav.href ? "bg-slate-600" : ""}`} href={nav.href}>{nav.name}</a>
+                <a class={`block p-2 hover:bg-slate-400 text-sm hover:text-slate-200 ${$page.url.pathname === nav.href ? "bg-slate-600" : ""}`} href={nav.href}>{nav.name}</a>
             </li>
         {/each}
     </ul>
@@ -82,8 +82,8 @@ const sidebarNav = [
             {:then { colorFetcher, token }} 
                 <div class="flex flex-row">
                     <div class="w-full p-2 h-72">
-                        <div class="border-slate-400 border p-2 h-full rounded bg-white">
-                            <h2 class="text-xl text-slate-700 font-bold">
+                        <div class="shadow-sm p-2 h-full rounded-sm bg-white">
+                            <h2 class="text-md text-slate-600 font-bold">
                                 Overall Language Usage
                             </h2>
                             {#await fetchAllRepostoryLanguageData(token)}
@@ -100,8 +100,8 @@ const sidebarNav = [
                     {#await fetchRepositoriesForUser(token) then repositories}
                         {#each repositories as repo}
                             <div class="w-1/4 p-2 mb h-72">
-                                <div class="p-2 border-slate-400 border h-full rounded bg-white">
-                                    <h2 class="text-xl text-slate-700 font-bold">
+                                <div class="p-2 shadow-sm h-full rounded-sm bg-white">
+                                    <h2 class="text-md text-slate-600 font-bold">
                                         {repo}
                                     </h2>
                                     {#await fetchRepositoryData(token, repo)}
