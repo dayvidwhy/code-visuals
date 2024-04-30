@@ -1,6 +1,11 @@
 # Code Visuals
 Visual statistics for git users.
 
+![GitHub last commit](https://img.shields.io/github/last-commit/dayvidwhy/code-visuals)
+![GitHub issues](https://img.shields.io/github/issues/dayvidwhy/code-visuals)
+![GitHub pull requests](https://img.shields.io/github/issues-pr/dayvidwhy/code-visuals)
+![GitHub](https://img.shields.io/github/license/dayvidwhy/code-visuals)
+
 Application makes use of:
 * Svelte
 * SvelteKit
