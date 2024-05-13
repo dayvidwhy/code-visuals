@@ -27,8 +27,7 @@ const init = async (): Promise<
     * We're appending the 'accessToken' property to the session back
     * in ./src/auth.ts so we can access it here.
     */
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
+    // @ts-expect-error - accessToken is appended to the session object
     const token = $page.data.session.accessToken;
     await fetchUserDetails(token);
     return {
